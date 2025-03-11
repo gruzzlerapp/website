@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gruzzler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gloock&display=swap');
+
+        :root {
+            --text-color: #000;
+            --background-color: #fff;
+            --search-blue: #61dafb;
+            --scratch-pink: #ffc0cb;
+            --yellow: #ffe566;
+            --inactive-bg: #D3D3D3;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 414px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 15px;
+            position: relative;
+        }
+
+        .title {
+            font-family: 'Gloock', serif;
+            font-size: 28px;
+            text-align: center;
+            flex-grow: 1;
+            color: var(--text-color);
+        }
+
+        .chip-container {
+            position: absolute;
+            top: 20px;
+            right: 15px;
+            z-index: 10;
+        }
+
+        .chip {
+            background-color: black;
+            border-radius: 12px;
+            padding: 12px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .info-space {
+            width: 350px;
+            height: 350px;
+            margin: 0 auto 20px;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--card-shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .info-content {
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: none;
+            scrollbar-width: thin;
+            scrollbar-color: var(--text-color) transparent;
+        }
+
+        .info-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .info-content::-webkit-scrollbar-thumb {
+            background-color: var(--text-color);
+            border-radius: 20px;
+            border: 3px solid transparent;
+        }
+
+        .info-content.active {
+            opacity: 1;
+            display: block;
+        }
+
+        .toggle-switch {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto 30px;
+            border-radius: 25px;
+            position: relative;
+            height: 44px;
+            background-color: var(--search-blue);
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-button {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-button-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: black;
+            transition: color 0.3s ease;
+        }
+        
+        .active-about .toggle-button-text {
+            color: var(--search-blue);
+        }
+        
+        .active-howto .toggle-button-text {
+            color: var(--scratch-pink);
+        }
+        
+        .active-team .toggle-button-text {
+            color: var(--yellow);
+        }
+        
+        .selector {
+            position: absolute;
+            width: calc(100% / 3 - 4px);
+            top: 2px;
+            bottom: 2px;
+            left: 2px;
+            background-color: black;
+            border-radius: 23px;
+            transition: transform 0.3s ease;
+            z-index: 0;
+        }
+
+        .download-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 350px;
+            padding: 20px 0;
+        }
+
+        .download-chip {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .download-icon {
+            background-color: black;
+            border-radius: 12px;
+            padding: 12px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+            margin-bottom: 8px;
+        }
+
+        .download-text {
+            font-size: 12px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--background-color);
+        }
+
+        .footer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .footer-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .footer-text {
+            font-size: 12px;
+        }
+
+
+
+        .footer {
+            border-top-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="title">Gruzzler</div>
+        </header>
+
+        <div class="info-space">
+            <div class="info-content active" id="about-content">
+                <h2>About Gruzzler</h2>
+                <p>Gruzzler is a unique number puzzle game that challenges your logical thinking and problem-solving skills.</p>
+                <p>Unlike traditional Sudoku, Gruzzler introduces innovative mechanics that provide a fresh and engaging puzzle experience for players of all levels.</p>
+                <p>With daily challenges and various grid sizes, there's always a new puzzle waiting for you to solve.</p>
+                <p>Whether you're a casual puzzle enthusiast or a seasoned logic master, Gruzzler offers the perfect balance of challenge and fun.</p>
+            </div>
+            <div class="info-content" id="howto-content">
+                <h2>How to Play</h2>
+                <p><strong>Basic Rules:</strong></p>
+                <p>1. Fill the grid with numbers so that each row, column, and box contains each number exactly once.</p>
+                <p>2. Use the Search mode to identify possible number placements.</p>
+                <p>3. Use the Scratch mode to make notes about potential numbers for each cell.</p>
+                <p>4. Use the Solve mode to input your final answers.</p>
+                <p><strong>Tips:</strong></p>
+                <p>- Start with cells that have the fewest possibilities.</p>
+                <p>- Use process of elimination to narrow down options.</p>
+                <p>- Look for patterns across rows, columns, and boxes.</p>
+            </div>
+            <div class="info-content" id="team-content">
+                <h2>The Team</h2>
+                <p>Gruzzler is developed by a passionate team of puzzle enthusiasts and game developers dedicated to creating thoughtful, challenging, and enjoyable experiences.</p>
+                <p><strong>Lead Developer:</strong> Creating innovative puzzle mechanics and smooth gameplay.</p>
+                <p><strong>Puzzle Designer:</strong> Crafting the perfect balance of challenge and satisfaction in every puzzle.</p>
+                <p><strong>UI/UX Designer:</strong> Ensuring a clean, intuitive interface that enhances the puzzle-solving experience.</p>
+                <p>We're constantly working to improve Gruzzler and bring new features to our community of players.</p>
+            </div>
+        </div>
+
+        <div class="toggle-switch">
+            <div class="selector"></div>
+            <div class="toggle-button active-about" data-tab="about">
+                <span class="toggle-button-text">About</span>
+            </div>
+            <div class="toggle-button" data-tab="howto">
+                <span class="toggle-button-text">How To Play</span>
+            </div>
+            <div class="toggle-button" data-tab="team">
+                <span class="toggle-button-text">The Team</span>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <div class="download-chip" onclick="window.open('#', '_blank')">
+                <div class="download-icon">
+                    <i class="fab fa-apple" style="color: #FFA07A; font-size: 24px;"></i>
+                </div>
+                <div class="download-text">Download for iOS</div>
+            </div>
+            <div class="download-chip" onclick="window.open('#', '_blank')">
+                <div class="download-icon">
+                    <i class="fab fa-android" style="color: #FFA07A; font-size: 24px;"></i>
+                </div>
+                <div class="download-text">Download for Android</div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <a href="#" class="footer-item">
+                <i class="fas fa-home footer-icon"></i>
+                <span class="footer-text">Home</span>
+            </a>
+            <a href="https://reddit.com/r/gruzzler" target="_blank" class="footer-item">
+                <i class="fab fa-reddit footer-icon"></i>
+                <span class="footer-text">Community</span>
+            </a>
+            <a href="#" class="footer-item">
+                <i class="fas fa-newspaper footer-icon"></i>
+                <span class="footer-text">Press Kit</span>
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // Toggle between tabs
+        document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.getAttribute('data-tab');
+                
+                // Update selector position
+                const index = Array.from(button.parentElement.children).indexOf(button) - 1;
+                const selector = document.querySelector('.selector');
+                selector.style.transform = `translateX(${index * 100}%)`;
+                
+                // Update toggle switch background color based on active tab
+                const toggleSwitch = document.querySelector('.toggle-switch');
+                if (tab === 'about') {
+                    toggleSwitch.style.backgroundColor = '#61dafb'; // search blue
+                } else if (tab === 'howto') {
+                    toggleSwitch.style.backgroundColor = '#ffc0cb'; // scratch pink
+                } else if (tab === 'team') {
+                    toggleSwitch.style.backgroundColor = '#ffe566'; // yellow
+                }
+                
+                // Update active tab content
+                document.querySelectorAll('.info-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tab}-content`).classList.add('active');
+                
+                // Update toggle button styles
+                document.querySelectorAll('.toggle-button').forEach(btn => {
+                    btn.classList.remove('active-about', 'active-howto', 'active-team');
+                });
+                button.classList.add(`active-${tab}`);
+            });
+        });
+
+        // Initialize with the default view (About - blue)
+        document.querySelector('.toggle-switch').style.backgroundColor = '#61dafb';
+    </script>
+</body>
+</html>
