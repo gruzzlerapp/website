@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del:*)",
+      "Bash(cmd /c \"git status\")",
+      "WebSearch",
+      "WebFetch(domain:www.microns.io)",
+      "Bash(dir:*)"
+    ]
+  }
+}
